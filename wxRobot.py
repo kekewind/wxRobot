@@ -14,6 +14,7 @@ class App(object):
 
         #所有的单独对话,比如 filehelper(文件助手),公众号,单个好友
         @self.itchat.msg_register([TEXT, MAP, CARD, NOTE, SHARING], isFriendChat = True)
+        def FriendChat(msg):
             self.wx_robot_conn.db[DB_NAME].insert(msg)
             self.itchat.send(self.get_response(msg['Content']), msg['FromUserName'])
 
@@ -51,7 +52,10 @@ class App(object):
     def run(self):
         try:
             self.bot.Train()
-            self.itchat.auto_login(enableCmdQR=False, hotReload=True)
+            if os.name == 'nt':
+                self.itchat.auto_login(enableCmdQR=False, hotReload=True)
+            else:
+                self.itchat.auto_login(enableCmdQR=True, hotReload=True)
             self.at_robot_string = '@' + self.itchat.search_friends()['PYQuanPin']
             self.itchat.run()
         except Exception as e:
