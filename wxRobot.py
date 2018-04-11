@@ -4,6 +4,7 @@ from itchat.content import *
 import pymongo
 from util import *
 from bot import *
+import time
 
 class App(object):
     """全局唯一进程实例"""
@@ -15,7 +16,6 @@ class App(object):
         #所有的单独对话,比如 filehelper(文件助手),公众号,单个好友
         @self.itchat.msg_register([TEXT, MAP, CARD, NOTE, SHARING], isFriendChat = True)
         def FriendChat(msg):
-            print(msg)
             self.wx_robot_conn.db[DB_NAME].insert(msg)
             self.itchat.send(self.get_response(msg['Content']), msg['FromUserName'])
 
@@ -23,18 +23,50 @@ class App(object):
         def addFriendChat(msg):
             self.itchat.send(self.get_response(msg['Content']), msg['FromUserName'])
 
-        @self.itchat.msg_register([PICTURE, RECORDING, ATTACHMENT, VIDEO])
-        def download_files(msg):
+        @self.itchat.msg_register([PICTURE, RECORDING, ATTACHMENT, VIDEO], isFriendChat = True)
+        def download_person_files(msg):
+            print(msg)
             if msg['FromUserName'] != self.at_robot_string:
+                user = self.itchat.search_friends(userName = msg['FromUserName'])
                 FileName = msg['FileName']
+                if not os.path.exists(FILE_STORAGE_ROOT):
+                    os.mkdir(FILE_STORAGE_ROOT)
+                path = os.path.join(FILE_STORAGE_ROOT, user['PYQuanPin'])
+                if not os.path.exists(path):
+                    os.mkdir(path)
+                localtime=time.strftime('%Y-%m-%d',time.localtime(time.time()))
+                path = os.path.join(path, localtime)
+                if not os.path.exists(path):
+                    os.mkdir(path)
+                file_path = os.path.join(path, FileName)
                 download_fun = msg['Text']
-                with open(FileName, 'wb') as f:
+                with open(file_path, 'wb') as f:
+                    f.write(download_fun())
+
+        @self.itchat.msg_register([PICTURE, RECORDING, ATTACHMENT, VIDEO], isGroupChat = True)
+        def download_group_files(msg):
+            print(msg)
+            if msg['ToUserName'] != self.at_robot_string:
+                user = self.itchat.search_chatrooms(userName = msg['ToUserName'])
+                print(user)
+                FileName = msg['FileName']
+                if not os.path.exists(FILE_STORAGE_ROOT):
+                    os.mkdir(FILE_STORAGE_ROOT)
+                path = os.path.join(FILE_STORAGE_ROOT, user['NickName'])
+                if not os.path.exists(path):
+                    os.mkdir(path)
+                localtime=time.strftime('%Y-%m-%d',time.localtime(time.time()))
+                path = os.path.join(path, localtime)
+                if not os.path.exists(path):
+                    os.mkdir(path)
+                file_path = os.path.join(path, FileName)
+                download_fun = msg['Text']
+                with open(file_path, 'wb') as f:
                     f.write(download_fun())
 
         #群聊天
         @self.itchat.msg_register([TEXT, MAP, CARD, NOTE, SHARING], isGroupChat = True)
         def GroupChat(msg):
-            print(msg)
             self.wx_robot_conn.db[DB_NAME].insert(msg)
             if self.at_robot_string in msg['Content']:
                 if "@@" in msg['FromUserName']:

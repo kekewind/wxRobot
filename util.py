@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+import os
+
 DB_NAME = 'wxRobot'
 
-FILE_STORAGE_ROOT = os.name == 'nt' : 'D:/data'?'/data'
+FILE_STORAGE_ROOT = ''
+
+if os.name == 'nt': 
+    FILE_STORAGE_ROOT = 'D:/wxRobot'
+else:
+    FILE_STORAGE_ROOT = '/data'
