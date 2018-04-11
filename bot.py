@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
+import os
 
 class Bot(object):
     """docstring for Bot"""
@@ -13,8 +14,8 @@ class Bot(object):
         self.chatbot.train('chatbot.corpus.chinese')
         self.chatbot.train('chatbot.corpus.english')
         self.chatbot.train([
-        "你是谁？",
-        "我是嘉旭开发的智能机器人。有麻烦找他！我就是个干脏活的！！！[发怒]",
+        "你好",
+        "你好，我是weShare开发的智能机器人。很高兴为你服务。",
         "提前批针对哪些岗位的招聘？",
         "提前批面向2018年应届毕业生，开放软件开发、技术运营、安全技术、软件测试、技术研究等技术类岗位，以及游戏策划、游戏运营岗位。",
         "什么时候面试？以什么样的形式面试？",
@@ -29,22 +30,6 @@ class Bot(object):
         "不客气",
         "谢谢",
         "拜~~~"
-        ])
-
-        self.chatbot.train([
-        "你是谁？",
-        "我是小公举"])
-
-        self.chatbot.train([
-        "谁？",
-        "我是小公举"])
-        self.chatbot.train([
-        "我是谁？",
-        "我搞不清楚啦"])
-        
-        self.chatbot.train([
-        "是谁？",
-        "是我,萌萌的小公举"
         ])
 
     def get_response(self, text):

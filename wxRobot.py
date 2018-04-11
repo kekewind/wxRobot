@@ -15,6 +15,7 @@ class App(object):
         #所有的单独对话,比如 filehelper(文件助手),公众号,单个好友
         @self.itchat.msg_register([TEXT, MAP, CARD, NOTE, SHARING], isFriendChat = True)
         def FriendChat(msg):
+            print(msg)
             self.wx_robot_conn.db[DB_NAME].insert(msg)
             self.itchat.send(self.get_response(msg['Content']), msg['FromUserName'])
 
@@ -24,14 +25,16 @@ class App(object):
 
         @self.itchat.msg_register([PICTURE, RECORDING, ATTACHMENT, VIDEO])
         def download_files(msg):
-            FileName = msg['FileName']
-            download_fun = msg['Text']
-            with open(FileName, 'wb') as f:
-                f.write(download_fun())
+            if msg['FromUserName'] != self.at_robot_string:
+                FileName = msg['FileName']
+                download_fun = msg['Text']
+                with open(FileName, 'wb') as f:
+                    f.write(download_fun())
 
         #群聊天
         @self.itchat.msg_register([TEXT, MAP, CARD, NOTE, SHARING], isGroupChat = True)
         def GroupChat(msg):
+            print(msg)
             self.wx_robot_conn.db[DB_NAME].insert(msg)
             if self.at_robot_string in msg['Content']:
                 if "@@" in msg['FromUserName']:
@@ -44,13 +47,12 @@ class App(object):
         def MpChat(msg):
             self.wx_robot_conn.db[DB_NAME].insert(msg)
 
-        self.bot = Bot()
-
     def get_response(self, text):
         return self.bot.get_response(text)
 
     def run(self):
         try:
+            self.bot = Bot()
             self.bot.Train()
             if os.name == 'nt':
                 self.itchat.auto_login(enableCmdQR=False, hotReload=True)
