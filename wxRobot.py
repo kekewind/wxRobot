@@ -17,19 +17,17 @@ class App(object):
 
     def msg_register(self):
         #所有的单独对话,比如 filehelper(文件助手),公众号,单个好友
-        @self.itchat.msg_register([TEXT, MAP, CARD, NOTE, SHARING], isFriendChat = True)
+        @self.itchat.msg_register([TEXT, MAP, CARD, SHARING], isFriendChat = True)
         def FriendChat(msg):
             self.wx_robot_conn.db[DB_NAME].insert(msg)
             self.itchat.send(self.get_response(msg['Content']), msg['FromUserName'])
 
-        @self.itchat.msg_register(FRIENDS, isFriendChat = True)
+        @self.itchat.msg_register([FRIENDS, NOTE], isFriendChat = True)
         def addFriendChat(msg):
             self.wx_robot_conn.db[DB_NAME].insert(msg)
-            self.itchat.send(self.get_response(msg['Content']), msg['FromUserName'])
 
         @self.itchat.msg_register([PICTURE, RECORDING, ATTACHMENT, VIDEO], isFriendChat = True)
         def download_person_files(msg):
-            self.wx_robot_conn.db[DB_NAME].insert(msg)
             if msg['FromUserName'] != self.at_robot_string:
                 user = self.itchat.search_friends(userName = msg['FromUserName'])
                 FileName = msg['FileName']
@@ -46,10 +44,11 @@ class App(object):
                 download_fun = msg['Text']
                 with open(file_path, 'wb') as f:
                     f.write(download_fun())
+            msg['Text'] = None
+            self.wx_robot_conn.db[DB_NAME].insert(msg)
 
         @self.itchat.msg_register([PICTURE, RECORDING, ATTACHMENT, VIDEO], isGroupChat = True)
         def download_group_files(msg):
-            self.wx_robot_conn.db[DB_NAME].insert(msg)
             userName = ''
             if "@@" in msg['FromUserName']:
                 user = self.itchat.search_chatrooms(userName = msg['FromUserName'])
@@ -67,6 +66,8 @@ class App(object):
                 download_fun = msg['Text']
                 with open(file_path, 'wb') as f:
                     f.write(download_fun())
+            msg['Text'] = None
+            self.wx_robot_conn.db[DB_NAME].insert(msg)
 
         #群聊天
         @self.itchat.msg_register([TEXT, MAP, CARD, NOTE, SHARING], isGroupChat = True)
@@ -85,7 +86,7 @@ class App(object):
 
     def get_response(self, text):
         cmdRet = self.cmdBot.get_response(text)
-        if cmdBot != None:
+        if cmdRet != None:
             return cmdRet
         return self.bot.get_response(text)
 
@@ -93,12 +94,12 @@ class App(object):
         try:
             self.bot = Bot()
             self.bot.Train()
-            self.cmdBot = CmdBot()
             if os.name == 'nt':
                 self.itchat.auto_login(enableCmdQR=False, hotReload=True)
             else:
                 self.itchat.auto_login(enableCmdQR=True, hotReload=True)
             self.at_robot_string = '@' + self.itchat.search_friends()['PYQuanPin']
+            self.cmdBot = CmdBot(self.at_robot_string)
             self.itchat.run()
         except Exception as e:
             self.itchat.logout()

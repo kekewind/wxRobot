@@ -3,10 +3,9 @@ from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
 import os
 
-class Bot(object):
+class Bot():
     """docstring for Bot"""
     def __init__(self):
-        super(Bot, self).__init__()
         self.chatbot = ChatBot("wxRobot")
         self.chatbot.set_trainer(ListTrainer)
 
