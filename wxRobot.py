@@ -25,6 +25,8 @@ class App(object):
         @self.itchat.msg_register([FRIENDS, NOTE], isFriendChat = True)
         def addFriendChat(msg):
             self.wx_robot_conn.db[DB_NAME].insert(msg)
+            if msg['Content'].endswith("刚刚把你添加到通讯录，现在可以开始聊天了。") and msg["MsgType"] == 10000:
+                return "我是新分享机器人，很高兴见到您。[微笑]"
 
         @self.itchat.msg_register([PICTURE, RECORDING, ATTACHMENT, VIDEO], isFriendChat = True)
         def download_person_files(msg):
