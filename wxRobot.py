@@ -99,7 +99,7 @@ class App(object):
             if os.name == 'nt':
                 self.itchat.auto_login(enableCmdQR=False, hotReload=True)
             else:
-                self.itchat.auto_login(enableCmdQR=True, hotReload=True)
+                self.itchat.auto_login(enableCmdQR=2, hotReload=True)
             self.at_robot_string = '@' + self.itchat.search_friends()['NickName']
             self.cmdBot = CmdBot(self.at_robot_string)
             self.itchat.run()
