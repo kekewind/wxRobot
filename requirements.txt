@@ -56,7 +56,7 @@ sklearn==0.0
 SQLAlchemy==1.2.5
 tensorflow==1.5.0
 tensorflow-tensorboard==1.5.1
-urllib3==1.22
+urllib3==1.26.5
 w3lib==1.19.0
 Werkzeug==0.14.1
 wxpy==0.3.9.8
