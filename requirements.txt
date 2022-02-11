@@ -30,7 +30,7 @@ numpy==1.14.1
 oauthlib==2.0.7
 openpyxl==2.5.1
 parsel==1.4.0
-protobuf==3.5.1
+protobuf==3.15.0
 pyasn1==0.4.2
 pyasn1-modules==0.2.1
 pycparser==2.18
