@@ -26,7 +26,7 @@ Markdown==2.6.11
 mathparse==0.1.1
 matplotlib==2.2.2
 nltk==3.2.5
-numpy==1.14.1
+numpy==1.22.0
 oauthlib==2.0.7
 openpyxl==2.5.1
 parsel==1.4.0
